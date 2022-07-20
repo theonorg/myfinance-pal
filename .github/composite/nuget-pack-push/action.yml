@@ -1,0 +1,44 @@
+name: "Nuget pack and publish"
+description: "Creates nuget package and pushed to public/private source"
+
+inputs:
+  project:
+    description: "Project to build"
+    required: true
+  package-source:
+    description: "Package management source (nuget.config)"
+    required: true
+  configuration:
+    description: "Build configuration"
+    default: Release
+    required: false
+  github-token:
+    description: "Add GITHUB_TOKEN to compilation"
+    required: false
+    default: "dummy"
+
+runs:
+  using: "composite"
+  steps:
+  - name: Setup .NET
+    uses: actions/setup-dotnet@v1
+    with:
+      dotnet-version: 6.0.x
+
+  - name: Pack
+    shell: bash
+    run: |
+      dotnet pack ${{ inputs.project }} -c ${{ inputs.configuration }} --output ./publish
+    
+  - name: Push
+    shell: bash
+    run: |
+      dotnet nuget push ./publish/*.nupkg --source ${{ inputs.package-source }} --skip-duplicate
+    env:
+      GITHUB_TOKEN: ${{ inputs.github-token }}
+
+  
+
+
+
+

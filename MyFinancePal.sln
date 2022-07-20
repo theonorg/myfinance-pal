@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BB6E77AA-F425-4927-AC00-4C67D0EA7EA3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{448803FD-88A0-40C8-A947-671A2C54C325}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlobalFramework", "src\Libs\GlobalFramework\GlobalFramework.csproj", "{67980D91-5A6D-4DF5-A2E2-37EA6EDA5A2A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration", "{599B1839-E4D7-4870-BA9B-8F448BF84718}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BankIntegration", "BankIntegration", "{712043D7-19B7-4468-8F01-99BD01A60721}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankIntegration.API", "src\Integration\BankIntegration\BankIntegration.API\BankIntegration.API.csproj", "{F6BAB33B-D2FA-441F-AC2F-15D4C09F52AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nordigen.Net", "src\Libs\Nordigen.Net\Nordigen.Net.csproj", "{93C8C5CF-6604-4450-960C-15AFC88A1B9D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{67980D91-5A6D-4DF5-A2E2-37EA6EDA5A2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67980D91-5A6D-4DF5-A2E2-37EA6EDA5A2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67980D91-5A6D-4DF5-A2E2-37EA6EDA5A2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67980D91-5A6D-4DF5-A2E2-37EA6EDA5A2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6BAB33B-D2FA-441F-AC2F-15D4C09F52AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6BAB33B-D2FA-441F-AC2F-15D4C09F52AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6BAB33B-D2FA-441F-AC2F-15D4C09F52AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6BAB33B-D2FA-441F-AC2F-15D4C09F52AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93C8C5CF-6604-4450-960C-15AFC88A1B9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93C8C5CF-6604-4450-960C-15AFC88A1B9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93C8C5CF-6604-4450-960C-15AFC88A1B9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93C8C5CF-6604-4450-960C-15AFC88A1B9D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{448803FD-88A0-40C8-A947-671A2C54C325} = {BB6E77AA-F425-4927-AC00-4C67D0EA7EA3}
+		{67980D91-5A6D-4DF5-A2E2-37EA6EDA5A2A} = {448803FD-88A0-40C8-A947-671A2C54C325}
+		{599B1839-E4D7-4870-BA9B-8F448BF84718} = {BB6E77AA-F425-4927-AC00-4C67D0EA7EA3}
+		{712043D7-19B7-4468-8F01-99BD01A60721} = {599B1839-E4D7-4870-BA9B-8F448BF84718}
+		{F6BAB33B-D2FA-441F-AC2F-15D4C09F52AF} = {712043D7-19B7-4468-8F01-99BD01A60721}
+		{93C8C5CF-6604-4450-960C-15AFC88A1B9D} = {448803FD-88A0-40C8-A947-671A2C54C325}
+	EndGlobalSection
+EndGlobal

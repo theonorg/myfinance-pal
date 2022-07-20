@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Tiberna.MyFinancePal.GlobalFramework</RootNamespace>
+    <AssemblyName>Tiberna.MyFinancePal.GlobalFramework</AssemblyName>
+
+    <PackageId>Tiberna.MyFinancePal.GlobalFramework</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>tasb</Authors>
+    <Company>tiberna</Company>
+    <RepositoryUrl>https://github.com/tasb/myfinance-pal</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="FluentValidation" Version="10.4.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.2" />
+  </ItemGroup>
+
+</Project>

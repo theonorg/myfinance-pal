@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Tiberna.MyFinancePal.Nordigen.Net</RootNamespace>
+    <AssemblyName>Tiberna.MyFinancePal.Nordigen.Net</AssemblyName>
+
+    <PackageId>Tiberna.MyFinancePal.Nordigen.Net</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>tasb</Authors>
+    <Company>tiberna</Company>
+    <RepositoryUrl>https://github.com/tasb/myfinance-pal</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+  </ItemGroup>
+
+</Project>

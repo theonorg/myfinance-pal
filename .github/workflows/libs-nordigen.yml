@@ -1,0 +1,35 @@
+name: libs-nordigen
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+    - main
+    paths:
+      - 'src/Libs/Nordigen.Net/**'
+      - '.github/workflows/libs-nordigen.yml'
+  push:
+    branches:
+    - main
+    paths:
+      - 'src/Libs/Nordigen.Net/**'
+      - '.github/workflows/libs-nordigen.yml'
+
+jobs:
+  build-pack-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - uses: ./.github/workflows/composite/build-dotnet
+      with:
+        workdir: 'src/Libs/Nordigen.Net/'
+        project: 'Nordigen.Net.csproj'
+
+    - uses: ./.github/workflows/composite/nuget-pack-push
+      if: ${{ github.event_name != 'pull_request' }}
+      with:
+        project: 'src/Libs/Nordigen.Net/Nordigen.Net.csproj'
+        package-source: github
+        github-token: ${{ secrets.GITHUB_TOKEN }}
