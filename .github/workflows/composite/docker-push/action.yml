@@ -42,6 +42,7 @@ runs:
     working-directory: ./src
     shell: bash
     run: |
+      export
       docker build ${{ inputs.context }} --file "${{ inputs.context }}/${{ inputs.dockerfile }}" --tag ghcr.io/${{ inputs.registry }}/my-finance-pal/${{ inputs.service-name }}:${{ inputs.image-tag }}
     env:
       GITHUB_TOKEN: ${{ inputs.github-token }}
