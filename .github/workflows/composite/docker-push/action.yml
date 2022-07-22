@@ -36,7 +36,7 @@ runs:
     with:
       registry: ${{ inputs.registry }}
       username: ${{ inputs.registry-username }}
-      password: ${{ secrets.GITHUB_TOKEN }}
+      password: ${{ inputs.github-token }}
 
   - name: Build image
     working-directory: ./src
