@@ -1,0 +1,54 @@
+name: integration-bank-api
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+    - main
+    paths:
+      - 'src/Integration/BankIntegration/BankIntegration.API/**'
+      - '.github/workflows/integration-bank.yml'
+      - '.github/workflows/composite/build-dotnet/action.yml'
+      - '.github/workflows/composite/docker-push/action.yml'
+
+  push:
+    branches:
+    - main
+    paths:
+      - 'src/Integration/BankIntegration/BankIntegration.API/**'
+      - '.github/workflows/integration-bank.yml'
+      - '.github/workflows/composite/build-dotnet/action.yml'
+      - '.github/workflows/composite/docker-push/action.yml'
+
+env:
+  IMAGE_TAG: ${{ github.run_id }}.${{ github.run_number }}
+  SERVICE_NAME: bank-integration-api
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    
+    - uses: ./.github/workflows/composite/build-dotnet
+      with:
+        workdir: 'src/Integration/BankIntegration/BankIntegration.API/'
+        project: 'BankIntegration.API.csproj'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        
+  docker-push:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' }}
+    needs: build-test
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ./.github/workflows/composite/docker-push
+      with:
+        context: 'src/Integration/BankIntegration/BankIntegration.API/'
+        registry: ghcr.io
+        registry-username: ${{ github.actor }}
+        service-name: ${{ env.SERVICE_NAME }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        image-tag: ${{ env.IMAGE_TAG }}

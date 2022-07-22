@@ -1,0 +1,11 @@
+version: '3.4'
+
+services:
+
+  bank-integration-api:
+    image: my-finance-pal/bank-integration-api
+    build:
+      context: src/Integration/BankIntegration/BankIntegration.API
+      dockerfile: ./Dockerfile.dev
+      args:
+        GITHUB_TOKEN:

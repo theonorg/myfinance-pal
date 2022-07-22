@@ -1,0 +1,19 @@
+version: '3.4'
+
+services:
+
+  bank-integration-api:
+    ports:
+      - 8000:80
+    env_file:
+    - .env
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      NORDIGEN_SECRET_ID: ${NORDIGEN_SECRET_ID}
+      NORDIGEN_SECRET_KEY: ${NORDIGEN_SECRET_KEY}
+    deploy:
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - ./.vsdbg:/remote_debugger:rw
+    
