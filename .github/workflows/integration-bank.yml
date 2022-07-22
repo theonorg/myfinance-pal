@@ -46,7 +46,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ./.github/workflows/composite/docker-push
       with:
-        context: 'src/Integration/BankIntegration/BankIntegration.API/'
+        context: 'Integration/BankIntegration/BankIntegration.API/'
         registry: ghcr.io
         registry-username: ${{ github.actor }}
         service-name: ${{ env.SERVICE_NAME }}
