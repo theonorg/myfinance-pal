@@ -4,14 +4,14 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>Tiberna.MyFinancePal.GlobalFramework</RootNamespace>
-    <AssemblyName>Tiberna.MyFinancePal.GlobalFramework</AssemblyName>
+    <RootNamespace>Theonorg.MyFinancePal.Libs.GlobalFramework</RootNamespace>
+    <AssemblyName>Theonorg.MyFinancePal.Libs.GlobalFramework</AssemblyName>
 
-    <PackageId>Tiberna.MyFinancePal.GlobalFramework</PackageId>
+    <PackageId>Theonorg.MyFinancePal.Libs.GlobalFramework</PackageId>
     <Version>0.1.0</Version>
     <Authors>tasb</Authors>
-    <Company>tiberna</Company>
-    <RepositoryUrl>https://github.com/tasb/myfinance-pal</RepositoryUrl>
+    <Company>theonorg</Company>
+    <RepositoryUrl>https://github.com/theonorg/myfinance-pal</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 

@@ -4,14 +4,14 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>Tiberna.MyFinancePal.Nordigen.Net</RootNamespace>
-    <AssemblyName>Tiberna.MyFinancePal.Nordigen.Net</AssemblyName>
+    <RootNamespace>Theonorg.MyFinancePal.Libs.Nordigen.Net</RootNamespace>
+    <AssemblyName>Theonorg.MyFinancePal.Libs.Nordigen.Net</AssemblyName>
 
-    <PackageId>Tiberna.MyFinancePal.Nordigen.Net</PackageId>
+    <PackageId>Theonorg.MyFinancePal.Libs.Nordigen.Net</PackageId>
     <Version>0.1.0</Version>
     <Authors>tasb</Authors>
-    <Company>tiberna</Company>
-    <RepositoryUrl>https://github.com/tasb/myfinance-pal</RepositoryUrl>
+    <Company>theonorg</Company>
+    <RepositoryUrl>https://github.com/theonorg/myfinance-pal</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 

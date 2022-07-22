@@ -27,7 +27,7 @@ runs:
       dotnet-version: 6.0.x
    
   - name: Initialize CodeQL
-    uses: github/codeql-action/init@v1
+    uses: github/codeql-action/init@v2
     with:
      languages: csharp
      config-file: ./.github/codeql/codeql-config.yml
@@ -47,8 +47,8 @@ runs:
   #- name: Test
   # run: dotnet test --no-build --verbosity normal
 
-  #- name: Perform CodeQL Analysis
-  #  uses: github/codeql-action/analyze@v1
+  - name: Perform CodeQL Analysis
+    uses: github/codeql-action/analyze@v2
   
 
 
