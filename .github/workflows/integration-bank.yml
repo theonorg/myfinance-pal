@@ -49,6 +49,7 @@ jobs:
         context: 'Integration/BankIntegration/BankIntegration.API/'
         registry: ghcr.io
         registry-username: ${{ github.actor }}
+        registry-name: theonorg
         service-name: ${{ env.SERVICE_NAME }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
         image-tag: ${{ env.IMAGE_TAG }}
