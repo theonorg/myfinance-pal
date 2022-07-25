@@ -43,15 +43,12 @@ runs:
     shell: bash
     run: |
       docker build ${{ inputs.context }} --build-arg GITHUB_TOKEN=${{ inputs.github-token }} --file "${{ inputs.context }}/${{ inputs.dockerfile }}" --tag ghcr.io/${{ inputs.registry }}/my-finance-pal/${{ inputs.service-name }}:${{ inputs.image-tag }}
-    env:
-      GITHUB_TOKEN: ${{ inputs.github-token }}
 
   - name: Run Trivy vulnerability scanner
     uses: aquasecurity/trivy-action@master
     with:
       image-ref: 'ghcr.io/${{ inputs.registry }}/my-finance-pal/${{ inputs.service-name }}:${{ inputs.image-tag }}'
       format: 'sarif'
-      exit-code: '1'
       output: 'trivy-results.sarif'
 
   - name: Upload Trivy scan results to GitHub Security tab
