@@ -49,7 +49,5 @@ jobs:
         context: 'Integration/BankIntegration/BankIntegration.API/'
         registry: ghcr.io
         registry-username: ${{ github.actor }}
-        registry-name: theonorg
-        service-name: ${{ env.SERVICE_NAME }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        image-tag: ${{ env.IMAGE_TAG }}
+        image-tag: 'ghcr.io/theonorg/my-finance-pal/${{ env.SERVICE_NAME }}:${{ env.IMAGE_TAG }}'
