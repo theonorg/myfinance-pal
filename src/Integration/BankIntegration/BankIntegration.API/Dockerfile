@@ -5,10 +5,10 @@ EXPOSE 80
 ENV ASPNETCORE_URLS=http://+:80
 ENV COMPlus_EnableDiagnostics=0
 
-RUN addgroup --group funappgroup --gid 2000 \
-    && adduser --uid 1000 --gid 2000 "funappuser" 
-RUN chown funappuser:funappgroup  /app
-USER funappuser:funappgroup 
+# RUN addgroup --group funappgroup --gid 2000 \
+#     && adduser --uid 1000 --gid 2000 "funappuser" 
+# RUN chown funappuser:funappgroup  /app
+# USER funappuser:funappgroup 
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0-focal AS build
 ARG GITHUB_TOKEN
