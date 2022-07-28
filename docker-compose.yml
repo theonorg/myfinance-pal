@@ -6,6 +6,20 @@ services:
     image: my-finance-pal/bank-integration-api
     build:
       context: src/Integration/BankIntegration/BankIntegration.API
-      dockerfile: ./Dockerfile.dev
+      dockerfile: ./Dockerfile
       args:
         GITHUB_TOKEN:
+
+  assets-service-api:
+    image: my-finance-pal/assets-service-api
+    build:
+      context: src/Services/AssetsService/AssetsService.API
+      dockerfile: ./Dockerfile
+      args:
+        GITHUB_TOKEN:
+    depends_on:
+      - assets-db
+      - bank-integration-api
+
+  assets-db:
+    image: postgres:14.2-alpine 

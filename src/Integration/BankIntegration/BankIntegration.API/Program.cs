@@ -1,6 +1,4 @@
 
-using Tiberna.MyFinancePal.BankIntegration.API.Model;
-
 var appName = "BankIntegration API";
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,7 +35,7 @@ app.MapGet("/bank/sync/{id:length(36)}", async (string id, IHttpClientFactory ht
     return result;
 })
 .WithName("SyncBankAccount")
-.WithTags(new[] { "Bank", "Integration" })
+.WithTags(new[] { "Bank" })
 .Produces<BankTransaction[]>(StatusCodes.Status200OK)
 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
