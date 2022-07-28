@@ -8,3 +8,4 @@ global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Logging.Console;
 global using Microsoft.OpenApi.Models;
 global using FluentValidation.Results;
+global using Microsoft.EntityFrameworkCore;

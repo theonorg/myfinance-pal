@@ -50,4 +50,30 @@ public static class WebApplicationBuilderExtensions
         return builder;
     }
 
+    public static void InitializePostgreSQLDatabase<T>(this WebApplication app, bool force = false) where T : DbContext
+    {
+        using IServiceScope scope = app.Services.CreateScope();
+
+        ILogger logger = scope.ServiceProvider.GetRequiredService<ILogger<T>>();
+        T context = scope.ServiceProvider.GetRequiredService<T>();
+
+        if (force || app.Environment.IsDevelopment())
+        {
+            CreateDatabase(context, logger);
+        }
+    }
+
+    private static void CreateDatabase<T>(T context, ILogger logger) where T : DbContext
+    {
+        try
+        {
+            context.Database.Migrate();
+        }
+        catch (Exception ex)
+        {
+            logger.LogCritical(ex, "Unable to create the database");
+            throw;
+        }
+    }
+
 }
