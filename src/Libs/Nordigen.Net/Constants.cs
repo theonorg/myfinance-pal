@@ -8,6 +8,8 @@ internal class Constants
     internal const string AccountsUrl = "/api/v2/accounts/";
     internal const string TokenUrl = "/api/v2/token/new/";
 
+    internal const string UserAgent = "MyFinancePal.Nordigen.Net";
+
     internal const string ContentMediaType = "application/json";
     internal const string AcceptedMediaType = "application/json";
 }

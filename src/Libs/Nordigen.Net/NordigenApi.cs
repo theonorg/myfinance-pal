@@ -1,20 +1,31 @@
 ﻿
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
+
 
 namespace Tiberna.MyFinancePal.Libs.Nordigen.Net;
 public class NordigenApi
 {
-    private readonly string _url;
-    private readonly IHttpClientFactory _httpClientFactory;
+    private HttpClient _httpClient;
+    private readonly ILogger<NordigenApi> _logger;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-    public NordigenApi(IHttpClientFactory httpClientFactory, string url)
+    // public NordigenApi(IHttpClientFactory httpClientFactory, string url)
+    // {
+    //     _httpClientFactory = httpClientFactory;
+    //     _url = url.TrimEnd('/');
+    //     _jsonSerializerOptions = new JsonSerializerOptions {
+    //         PropertyNameCaseInsensitive = true
+    //     };
+    // }
+
+    public NordigenApi(HttpClient httpClient, ILogger<NordigenApi> logger)
     {
-        _httpClientFactory = httpClientFactory;
-        _url = url.TrimEnd('/');
-        _jsonSerializerOptions = new JsonSerializerOptions {
+        _logger = logger;
+        _httpClient = httpClient;
+        _httpClient.DefaultRequestHeaders.Add("Accept", Constants.AcceptedMediaType);
+        _httpClient.DefaultRequestHeaders.Add("User-Agent", Constants.UserAgent);
+
+        _jsonSerializerOptions = new JsonSerializerOptions
+        {
             PropertyNameCaseInsensitive = true
         };
     }
@@ -24,9 +35,9 @@ public class NordigenApi
         var token = await GetAccessToken(cancellationToken);
 
         var accountUrl = $"{Constants.AccountsUrl}{accountId}/transactions/";
-        var httpClient = CreateHTTPClient(token);
+        SetHTTPAutorization(token);
 
-        var message = await httpClient.GetAsync(accountUrl, cancellationToken);
+        var message = await _httpClient.GetAsync(accountUrl, cancellationToken);
 
         if (!message.IsSuccessStatusCode)
         {
@@ -61,9 +72,8 @@ public class NordigenApi
         };
 
         var content = new FormUrlEncodedContent(credentials);
-        var httpClient = CreateHTTPClient();
 
-        var message = await httpClient.PostAsync(Constants.TokenUrl, content, cancellationToken);
+        var message = await _httpClient.PostAsync(Constants.TokenUrl, content, cancellationToken);
 
         if (!message.IsSuccessStatusCode)
         {
@@ -75,18 +85,11 @@ public class NordigenApi
         return token!.Access!;
     }
 
-    private HttpClient CreateHTTPClient(string? accessToken = null)
+    private void SetHTTPAutorization(string accessToken)
     {
-        var client = _httpClientFactory.CreateClient();
-        client.BaseAddress = new Uri(_url);
-        client.DefaultRequestHeaders.Add("Accept", Constants.AcceptedMediaType);
-        client.DefaultRequestHeaders.Add("User-Agent", "MyFinancePal.Nordigen.Net");
-
         if (!string.IsNullOrEmpty(accessToken))
         {
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
-
-        return client;
     }
 }
