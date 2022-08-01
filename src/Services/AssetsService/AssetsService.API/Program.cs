@@ -24,6 +24,9 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 
+builder.Services.AddScoped<IValidator<AccountDTO>, AccountValidator>();
+builder.Services.AddScoped<IValidator<TransactionDTO>, TransactionValidator>();
+
 var app = builder.Build();
 
 app.UseCustomSwagger(appName)
@@ -86,8 +89,16 @@ app.MapGet("/account/{id}", async ([FromRoute] int id, IAccountService accountSe
 .ProducesProblem(StatusCodes.Status404NotFound)
 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-app.MapPost("/account", async ([FromBody] AccountDTO newAccount, IAccountService accountService) =>
+app.MapPost("/account", async ([FromBody] AccountDTO newAccount, IAccountService accountService, IValidator<AccountDTO> validator) =>
 {
+    var validationResult = await validator.ValidateAsync(newAccount);
+
+    if (!validationResult.IsValid)
+    {
+        app.Logger.LogWarning($"Account {newAccount} is not valid");
+        return Results.ValidationProblem(validationResult.ToDictionary());
+    }
+
     try
     {
         app.Logger.LogInformation($"Creating a new account: {newAccount.Name}");
@@ -113,8 +124,37 @@ app.MapPost("/account", async ([FromBody] AccountDTO newAccount, IAccountService
 .ProducesProblem(StatusCodes.Status400BadRequest)
 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-app.MapPut("/account/{id}", async ([FromRoute] int id, [FromBody] AccountDTO account, IAccountService accountService) =>
+app.MapGet("/account/{accountId}/transaction", async ([FromRoute] int accountId, ITransactionService transactionService) =>
 {
+    app.Logger.LogDebug($"Requested transactions from account with ID {accountId}");
+    try
+    {
+        List<TransactionDTO> transactions = (await transactionService.GetTransactionsByAccountIdAsync(accountId)).ToList();
+        app.Logger.LogDebug($"Returning {transactions.Count} transactions");
+
+        return Results.Ok(transactions);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, $"Problem retrieving transactions ffrom account with ID {accountId}");
+        throw;
+    }
+})
+.WithName("GetTransactionsByAccountId")
+.WithTags(new[] { "Account" })
+.Produces<TransactionDTO[]>(StatusCodes.Status200OK)
+.ProducesProblem(StatusCodes.Status500InternalServerError);
+
+app.MapPut("/account/{id}", async ([FromRoute] int id, [FromBody] AccountDTO account, IAccountService accountService, IValidator<AccountDTO> validator) =>
+{
+    var validationResult = await validator.ValidateAsync(account);
+
+    if (!validationResult.IsValid)
+    {
+        app.Logger.LogWarning($"Account {account} is not valid");
+        return Results.ValidationProblem(validationResult.ToDictionary());
+    } 
+
     app.Logger.LogDebug($"Updating account {account.Name} with id {id}");
     if (id != account.Id)
     {
@@ -170,6 +210,49 @@ app.MapDelete("/account/{id}", async ([FromRoute] int id, IAccountService accoun
 .WithName("DeleteAccount")
 .WithTags(new[] { "Account" })
 .Produces<AccountDTO>(StatusCodes.Status200OK)
+.ProducesProblem(StatusCodes.Status404NotFound)
+.ProducesProblem(StatusCodes.Status500InternalServerError);
+
+app.MapGet("/account/{accountId}/transaction/sync", async ([FromRoute] int accountId, ITransactionService transactionService, IAccountService accountService, BankAPIHttpClient bankAPIHttpClient) =>
+{
+    try
+    {
+        app.Logger.LogDebug("Getting 90 days transactions from bank account.");
+
+        try
+        {
+            AccountDTO account = await accountService.GetAccountAsync(accountId);
+
+            if (string.IsNullOrEmpty(account.BankAccountId)) 
+            {
+                app.Logger.LogWarning($"Account with Id {accountId} does not have a bank account id");
+                return Results.BadRequest($"Account with Id {accountId} does not have a bank account id");
+            }
+
+            List<BankAPITransaction>? allBankTransactions = await bankAPIHttpClient.SyncAccount(account.BankAccountId);
+
+            int count = await transactionService.SyncTransactionsfromBankAsync(accountId, allBankTransactions!);
+
+            app.Logger.LogDebug($"Synced {count} transactions from bank account {account.BankAccountId} to account {accountId}");
+
+            return Results.Ok(count);
+        }
+        catch (ItemNotFoundException ex)
+        {
+            app.Logger.LogWarning(ex, $"Unable to find account with id {accountId}");
+            return Results.NotFound();
+        }
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, "Problem retrieving all transactions");
+        throw;
+    }
+
+})
+.WithName("SyncBankTransactions")
+.WithTags(new[] { "Account" })
+.Produces<int>(StatusCodes.Status200OK)
 .ProducesProblem(StatusCodes.Status404NotFound)
 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
@@ -282,27 +365,6 @@ app.MapGet("/transaction", async (ITransactionService transactionService) =>
 .Produces<TransactionDTO[]>(StatusCodes.Status200OK)
 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-app.MapGet("/account/{id}/transaction", async ([FromRoute] int id, ITransactionService transactionService) =>
-{
-    app.Logger.LogDebug($"Requested transactions from account with ID {id}");
-    try
-    {
-        List<TransactionDTO> transactions = (await transactionService.GetTransactionsByAccountIdAsync(id)).ToList();
-        app.Logger.LogDebug($"Returning {transactions.Count} transactions");
-
-        return Results.Ok(transactions);
-    }
-    catch (Exception ex)
-    {
-        app.Logger.LogWarning(ex, $"Problem retrieving transactions ffrom account with ID {id}");
-        throw;
-    }
-})
-.WithName("GetTransactionsByAccountId")
-.WithTags(new[] { "Transaction" })
-.Produces<TransactionDTO[]>(StatusCodes.Status200OK)
-.ProducesProblem(StatusCodes.Status500InternalServerError);
-
 app.MapGet("/transaction/{id}", async ([FromRoute] int id, ITransactionService transactionService) =>
 {
     app.Logger.LogDebug($"Requested transaction with ID {id}");
@@ -330,8 +392,16 @@ app.MapGet("/transaction/{id}", async ([FromRoute] int id, ITransactionService t
 .ProducesProblem(StatusCodes.Status404NotFound)
 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-app.MapPost("/transaction", async ([FromBody] TransactionDTO newTransaction, ITransactionService transactionService) =>
+app.MapPost("/transaction", async ([FromBody] TransactionDTO newTransaction, ITransactionService transactionService, IValidator<TransactionDTO> validator) =>
 {
+    var validationResult = await validator.ValidateAsync(newTransaction);
+
+    if (!validationResult.IsValid)
+    {
+        app.Logger.LogWarning($"Transaction {newTransaction} is not valid");
+        return Results.ValidationProblem(validationResult.ToDictionary());
+    }
+
     try
     {
         app.Logger.LogInformation($"Creating a new transaction: {newTransaction.Description}, {newTransaction.Date} on account {newTransaction.AccountId}");
@@ -357,8 +427,16 @@ app.MapPost("/transaction", async ([FromBody] TransactionDTO newTransaction, ITr
 .ProducesProblem(StatusCodes.Status400BadRequest)
 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-app.MapPut("/transaction/{id}", async ([FromRoute] int id, [FromBody] TransactionDTO transaction, ITransactionService transactionService) =>
+app.MapPut("/transaction/{id}", async ([FromRoute] int id, [FromBody] TransactionDTO transaction, ITransactionService transactionService, IValidator<TransactionDTO> validator) =>
 {
+    var validationResult = await validator.ValidateAsync(transaction);
+
+    if (!validationResult.IsValid)
+    {
+        app.Logger.LogWarning($"Transaction {transaction} is not valid");
+        return Results.ValidationProblem(validationResult.ToDictionary());
+    }
+
     app.Logger.LogDebug($"Updating transaction with id {id}");
     if (id != transaction.Id)
     {
@@ -427,43 +505,6 @@ app.MapDelete("/transaction/{id}", async ([FromRoute] int id, ITransactionServic
 .ProducesProblem(StatusCodes.Status404NotFound)
 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-
-app.MapGet("/transaction/sync/{id}", async ([FromRoute] string accountId, ITransactionService transactionService, IAccountService accountService, BankAPIHttpClient bankAPIHttpClient) =>
-{
-    try
-    {
-        app.Logger.LogDebug("Getting 90 days transactions from bank account.");
-
-        try
-        {
-            AccountDTO account = await accountService.GetAccountByBankAccountIdAsync(accountId);
-
-            List<BankAPITransaction>? allBankTransactions = await bankAPIHttpClient.SyncAccount(accountId);
-
-            int count = await transactionService.SyncTransactionsfromBankAsync(account.Id, allBankTransactions!);
-
-            app.Logger.LogDebug($"Synced {count} transactions from bank account {accountId} to account {account.Id}");
-
-            return Results.Ok(count);
-        }
-        catch (ItemNotFoundException ex)
-        {
-            app.Logger.LogWarning(ex, $"Unable to find account with bank account id {accountId}");
-            return Results.NotFound();
-        }
-    }
-    catch (Exception ex)
-    {
-        app.Logger.LogWarning(ex, "Problem retrieving all transactions");
-        throw;
-    }
-
-})
-.WithName("SyncBankTransactions")
-.WithTags(new[] { "Transaction" })
-.Produces<int>(StatusCodes.Status200OK)
-.ProducesProblem(StatusCodes.Status404NotFound)
-.ProducesProblem(StatusCodes.Status500InternalServerError);
 
 #endregion
 

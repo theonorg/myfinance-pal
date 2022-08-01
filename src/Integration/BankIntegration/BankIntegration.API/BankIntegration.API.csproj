@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-    <PackageReference Include="Theonorg.MyFinancePal.Libs.GlobalFramework" Version="0.1.0" />
-    <PackageReference Include="Theonorg.MyFinancePal.Libs.Nordigen.Net" Version="0.1.0" />
+    <PackageReference Include="Theonorg.MyFinancePal.Libs.GlobalFramework" Version="0.2.0" />
+    <PackageReference Include="Theonorg.MyFinancePal.Libs.Nordigen.Net" Version="0.2.0" />
   </ItemGroup>
 
   <ItemGroup>

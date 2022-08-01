@@ -119,7 +119,7 @@ public class TransactionService : ITransactionService
         Dictionary<string, int> currencyLookup = new Dictionary<string, int>();
         foreach (BankAPITransaction bankTransaction in bankTransactions)
         {
-            if (await CheckBankTransactionExists(accountId, bankTransaction.Id!))
+            if (!(await CheckBankTransactionExists(accountId, bankTransaction.Id!)))
             {
                 if (!currencyLookup.ContainsKey(bankTransaction.Currency!))
                 {

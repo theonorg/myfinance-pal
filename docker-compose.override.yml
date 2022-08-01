@@ -15,7 +15,7 @@ services:
       restart_policy:
         condition: on-failure
     volumes:
-      - ./.vsdbg:/remote_debugger:rw
+      - ~/.vsdbg:/remote_debugger:rw
 
   assets-service-api:
     ports:
@@ -29,7 +29,7 @@ services:
       restart_policy:
         condition: on-failure
     volumes:
-      - ./.vsdbg:/remote_debugger:rw
+      - ~/.vsdbg:/remote_debugger:rw
 
   assets-db:
     ports:

@@ -12,7 +12,7 @@ public class BankTransaction
     {
         BankTransaction newBankTransaction = new BankTransaction();
         newBankTransaction.Id = nordigenTransaction.TransactionId;
-        newBankTransaction.Date = nordigenTransaction.ValueDate!.Value;
+        newBankTransaction.Date = DateTime.SpecifyKind(nordigenTransaction.ValueDate!.Value, DateTimeKind.Utc);
         newBankTransaction.Amount = Convert.ToDecimal(nordigenTransaction.TransactionAmount!.Amount);
         newBankTransaction.Description = nordigenTransaction.RemittanceInformationUnstructured;
         newBankTransaction.Currency = nordigenTransaction.TransactionAmount.Currency;
