@@ -1,7 +1,4 @@
-﻿
-
-
-namespace Tiberna.MyFinancePal.Libs.Nordigen.Net;
+﻿namespace Tiberna.MyFinancePal.Libs.Nordigen.Net;
 public class NordigenApi
 {
     private HttpClient _httpClient;
