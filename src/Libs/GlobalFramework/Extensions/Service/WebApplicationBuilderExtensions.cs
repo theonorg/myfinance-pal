@@ -67,7 +67,10 @@ public static class WebApplicationBuilderExtensions
     {
         try
         {
-            context.Database.Migrate();
+            if (context.Database.IsNpgsql())
+            {
+                context.Database.Migrate();
+            }
         }
         catch (Exception ex)
         {
