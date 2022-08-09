@@ -54,7 +54,7 @@ runs:
   - name: Test
     shell: bash
     working-directory: ${{ inputs.workdir }}
-    run: dotnet test --no-build ${{ inputs.test-project  }} --verbosity normal --logger "trx;LogFileName=test-results.trx"
+    run: dotnet test --no-build ${{ inputs.test-project  }} --verbosity normal --logger "trx;LogFileName=test-results.trx" -c ${{ inputs.configuration }}
       
   - name: Test Report
     uses: dorny/test-reporter@v1
