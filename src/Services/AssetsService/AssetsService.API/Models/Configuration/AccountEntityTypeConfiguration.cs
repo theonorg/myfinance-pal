@@ -17,6 +17,7 @@ public class AccountEntityTypeConfiguration : IEntityTypeConfiguration<Account>
             .HasMaxLength(200);
 
         builder.Property(acc => acc.BankAccountId)
+            .HasColumnName("bank_account_id")
             .HasMaxLength(128);
 
         builder.Property(acc => acc.IsActive)

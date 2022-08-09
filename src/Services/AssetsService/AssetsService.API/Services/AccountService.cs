@@ -78,7 +78,7 @@ public class AccountService : IAccountService
 
     public async Task<IEnumerable<AccountDTO>> GetAllAccountsAsync()
     {
-        List<Account> allAccounts = await _context.Accounts.ToListAsync();
+        List<Account> allAccounts = await _context.Accounts.OrderBy(acc => acc.Id).ToListAsync();
         IEnumerable<AccountDTO> returnList = allAccounts.Select(t => new AccountDTO(t));
         return returnList;
     }

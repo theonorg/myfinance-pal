@@ -1,0 +1,8 @@
+### GET Currencies
+GET http://localhost:8001/currency HTTP/1.1
+
+### GET Currency by ID
+GET http://localhost:8001/currency/1 HTTP/1.1
+
+### GET Currency by Code
+GET http://localhost:8001/currency/USD HTTP/1.1

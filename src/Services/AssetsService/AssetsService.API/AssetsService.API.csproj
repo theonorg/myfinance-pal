@@ -20,7 +20,8 @@
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.5" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-    <PackageReference Include="Theonorg.MyFinancePal.Libs.GlobalFramework" Version="0.2.0" />
+    <PackageReference Include="Theonorg.MyFinancePal.Libs.GlobalFramework" Version="0.3.0" />
+    <InternalsVisibleTo Include="AssetsService.API.Tests" />
   </ItemGroup>
 
 </Project>

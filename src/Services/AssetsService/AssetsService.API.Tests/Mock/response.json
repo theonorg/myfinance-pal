@@ -1,0 +1,23 @@
+[
+  {
+    "id": "abc",
+    "date": "2022-08-04T11:46:37.993Z",
+    "amount": 10,
+    "description": "desc #1",
+    "currency": "EUR"
+  },
+  {
+    "id": "xyz",
+    "date": "2022-08-04T11:46:37.993Z",
+    "amount": -10,
+    "description": "desc #2",
+    "currency": "USD"
+  },
+  {
+    "id": "xpto",
+    "date": "2022-08-04T11:46:37.993Z",
+    "amount": 100,
+    "description": "desc #3",
+    "currency": "WRONG"
+  }
+]

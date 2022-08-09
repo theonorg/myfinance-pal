@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Tiberna.MyFinancePal.AssetsService.API.Models;
 
 public class Account
@@ -9,5 +11,6 @@ public class Account
     public string? Description { get; set; }
     public DateTime InitialBalanceDate { get; set; }
     public decimal InitialBalance { get; set; }
+    public List<Transaction>? Transactions { get; set; }
 }
 

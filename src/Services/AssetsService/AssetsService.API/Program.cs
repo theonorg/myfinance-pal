@@ -15,7 +15,7 @@ builder.Services.AddAntiforgery();
 builder.Services.AddPostgreSQLContext<AssetsDbContext>(dbConfig.AssetsDB!.ConnectionString!);
 
 builder.Services
-.AddHttpClient<BankAPIHttpClient>(client =>
+.AddHttpClient<IBankAPIHttpClient, BankAPIHttpClient>(client =>
 {
     client.BaseAddress = new Uri(integrationConfig.BankAPI);
 });
@@ -213,7 +213,7 @@ app.MapDelete("/account/{id}", async ([FromRoute] int id, IAccountService accoun
 .ProducesProblem(StatusCodes.Status404NotFound)
 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-app.MapGet("/account/{accountId}/transaction/sync", async ([FromRoute] int accountId, ITransactionService transactionService, IAccountService accountService, BankAPIHttpClient bankAPIHttpClient) =>
+app.MapGet("/account/{accountId}/transaction/sync", async ([FromRoute] int accountId, ITransactionService transactionService, IAccountService accountService, IBankAPIHttpClient bankAPIHttpClient) =>
 {
     try
     {
@@ -283,7 +283,7 @@ app.MapGet("/currency", async (ICurrencyService currencyService) =>
 .Produces<CurrencyDTO[]>(StatusCodes.Status200OK)
 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-app.MapGet("/currency/{id}", async ([FromRoute] int id, ICurrencyService currencyService) =>
+app.MapGet("/currency/{id:int}", async ([FromRoute] int id, ICurrencyService currencyService) =>
 {
     app.Logger.LogDebug($"Requested currency with ID {id}");
     try

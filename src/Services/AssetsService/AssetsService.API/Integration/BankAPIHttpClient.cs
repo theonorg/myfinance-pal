@@ -1,6 +1,6 @@
 namespace Tiberna.MyFinancePal.AssetsService.API.Integration;
 
-public class BankAPIHttpClient
+public class BankAPIHttpClient : IBankAPIHttpClient
 {
     private HttpClient _httpClient;
     private const string SYNC_URL = "/bank/sync";

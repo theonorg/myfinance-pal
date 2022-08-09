@@ -27,5 +27,8 @@ public class TransactionEntityTypeConfiguration : IEntityTypeConfiguration<Trans
         builder.Property(acc => acc.Amount)
             .IsRequired()
             .HasPrecision(10, 2);
+
+        builder.Property(acc => acc.BankTransactionId)
+            .HasColumnName("bank_transaction_id");
     }
 }
