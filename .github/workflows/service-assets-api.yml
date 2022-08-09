@@ -26,10 +26,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     
-    - uses: ./.github/workflows/composite/build-dotnet
+    - uses: ./.github/workflows/composite/build-test-dotnet
       with:
-        workdir: 'src/Services/AssetsService/AssetsService.API/'
-        project: 'AssetsService.API.csproj'
+        project: 'Services/AssetsService/AssetsService.API/AssetsService.API.csproj'
+        test-project: 'Services/AssetsService/AssetsService.API.Tests/AssetsService.API.Tests.csproj'
         github-token: ${{ secrets.GITHUB_TOKEN }}
         
   docker-push:
