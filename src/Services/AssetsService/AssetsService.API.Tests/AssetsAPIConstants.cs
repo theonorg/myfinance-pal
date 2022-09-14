@@ -19,7 +19,7 @@ internal static class AssetsAPIConstants
             new Transaction {
                 Id = 1,
                 Amount = 100.0M,
-                Date = DateTime.Now,
+                Date = new DateTime(2022, 8, 1),
                 Account = account,
                 Description = "Test #1" ,
                 Currency = currencies[0]
@@ -27,7 +27,7 @@ internal static class AssetsAPIConstants
             new Transaction {
                 Id = 2,
                 Amount = 200.0M,
-                Date = DateTime.Now,
+                Date = new DateTime(2022, 8, 2),
                 Account = account,
                 Description = "Test #2" ,
                 Currency = currencies[0]
@@ -35,7 +35,7 @@ internal static class AssetsAPIConstants
             new Transaction {
                 Id = 3,
                 Amount = -300.0M,
-                Date = DateTime.Now,
+                Date = new DateTime(2022, 8, 3),
                 Account = account,
                 Description = "Test #3" ,
                 Currency = currencies[1]
@@ -63,7 +63,7 @@ internal static class AssetsAPIConstants
         internal const string Create = "/account";
         internal static string Update(int id) => $"/account/{id}";
         internal static string Delete(int id) => $"/account/{id}";
-        internal const string GetTransaction = "/account/{0}/transaction";
+        internal static string GetAccountTransactions(int id) => $"/account/{id}/transaction";
         internal const string SyncTransactions = "/account/{0}/transaction/sync";
     }
 }

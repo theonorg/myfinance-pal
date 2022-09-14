@@ -58,14 +58,14 @@ public class TransactionService : ITransactionService
 
     public async Task<IEnumerable<TransactionDTO>> GetAllTransactionAsync()
     {
-        List<Transaction> allTransactions = await _context.Transactions.ToListAsync();
+        List<Transaction> allTransactions = await _context.Transactions.OrderBy(tr => tr.Id).ToListAsync();
         IEnumerable<TransactionDTO> returnList = allTransactions.Select(t => new TransactionDTO(t));
         return returnList;
     }
 
     public async Task<IEnumerable<TransactionDTO>> GetTransactionsByAccountIdAsync(int accountId)
     {
-        List<Transaction> transactions = await _context.Transactions.Where(tr => tr.AccountId == accountId).ToListAsync();
+        List<Transaction> transactions = await _context.Transactions.Where(tr => tr.AccountId == accountId).OrderBy(tr => tr.Id).ToListAsync();
         IEnumerable<TransactionDTO> returnList = transactions.Select(t => new TransactionDTO(t));
         return returnList;
     }

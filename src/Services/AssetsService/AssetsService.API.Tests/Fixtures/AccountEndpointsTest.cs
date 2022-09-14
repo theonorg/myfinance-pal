@@ -194,4 +194,35 @@ public class AccountEndpointsTest : IClassFixture<AssetsServiceAPITestController
         var response = await client.PutAsJsonAsync(AssetsAPIConstants.AccountEndpoints.Update(1000), account);
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
+
+    [Fact]
+    public async Task GetTransactionFromAccount()
+    {
+        var client = AssetsServiceAPI.CreateClient();
+        var transactions = await client.GetFromJsonAsync<List<TransactionDTO>>(AssetsAPIConstants.AccountEndpoints.GetAccountTransactions(1));
+
+        var expectedList = AccountExpectedList.Where(acc => acc.Id == 1).SelectMany(acc => acc.Transactions!).OrderBy(tr => tr.Id).ToList();
+
+        Assert.NotNull(transactions);
+        Assert.NotEmpty(transactions);
+        Assert.Equal(3, transactions!.Count);
+        foreach (var (transaction, expected) in transactions!.Zip(expectedList))
+        {
+            Assert.Equal(transaction.Id, expected!.Id);
+            Assert.Equal(transaction.Amount, expected.Amount);
+            Assert.Equal(transaction.Date, expected.Date);
+            Assert.Equal(transaction.Description, expected.Description);
+            Assert.Equal(transaction.CurrencyId, expected.Currency!.Id);
+        }
+    }
+
+    [Fact]
+    public async Task GetTransactionFromAccountWithoutTransactions()
+    {
+        var client = AssetsServiceAPI.CreateClient();
+        var transactions = await client.GetFromJsonAsync<List<TransactionDTO>>(AssetsAPIConstants.AccountEndpoints.GetAccountTransactions(2));
+
+        Assert.NotNull(transactions);
+        Assert.Empty(transactions);
+    }
 }

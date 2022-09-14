@@ -124,7 +124,7 @@ app.MapPost("/account", async ([FromBody] AccountDTO newAccount, IAccountService
 .ProducesProblem(StatusCodes.Status400BadRequest)
 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-app.MapGet("/account/{accountId}/transaction", async ([FromRoute] int accountId, ITransactionService transactionService) =>
+app.MapGet("/account/{accountId:int}/transaction", async (int accountId, ITransactionService transactionService) =>
 {
     app.Logger.LogDebug($"Requested transactions from account with ID {accountId}");
     try
@@ -145,7 +145,7 @@ app.MapGet("/account/{accountId}/transaction", async ([FromRoute] int accountId,
 .Produces<TransactionDTO[]>(StatusCodes.Status200OK)
 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-app.MapPut("/account/{id}", async ([FromRoute] int id, [FromBody] AccountDTO account, IAccountService accountService, IValidator<AccountDTO> validator) =>
+app.MapPut("/account/{id:int}", async ([FromRoute] int id, [FromBody] AccountDTO account, IAccountService accountService, IValidator<AccountDTO> validator) =>
 {
     var validationResult = await validator.ValidateAsync(account);
 
@@ -186,7 +186,7 @@ app.MapPut("/account/{id}", async ([FromRoute] int id, [FromBody] AccountDTO acc
 .ProducesProblem(StatusCodes.Status400BadRequest)
 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-app.MapDelete("/account/{id}", async ([FromRoute] int id, IAccountService accountService) =>
+app.MapDelete("/account/{id:int}", async ([FromRoute] int id, IAccountService accountService) =>
 {
     app.Logger.LogDebug($"Deleting account with id {id}");
 
@@ -213,7 +213,7 @@ app.MapDelete("/account/{id}", async ([FromRoute] int id, IAccountService accoun
 .ProducesProblem(StatusCodes.Status404NotFound)
 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-app.MapGet("/account/{accountId}/transaction/sync", async ([FromRoute] int accountId, ITransactionService transactionService, IAccountService accountService, IBankAPIHttpClient bankAPIHttpClient) =>
+app.MapGet("/account/{accountId:int}/transaction/sync", async ([FromRoute] int accountId, ITransactionService transactionService, IAccountService accountService, IBankAPIHttpClient bankAPIHttpClient) =>
 {
     try
     {
