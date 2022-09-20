@@ -11,9 +11,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       NORDIGEN_SECRET_ID: ${NORDIGEN_SECRET_ID}
       NORDIGEN_SECRET_KEY: ${NORDIGEN_SECRET_KEY}
-    deploy:
-      restart_policy:
-        condition: on-failure
+    restart: on-failure
     volumes:
       - ~/.vsdbg:/remote_debugger:rw
 
@@ -25,9 +23,7 @@ services:
       INTEGRATION__BANKAPI: http://bank-integration-api
       DATABASES__ASSETSDB__CONNECTIONSTRING: "User ID=dbuser;Password=P@ssw0rd;Server=assets-db;Port=5432;Database=AssetsDb;Integrated Security=true;Pooling=true;"
       DATABASES__ASSETSDB__FORCEINIT: "true"
-    deploy:
-      restart_policy:
-        condition: on-failure
+    restart: on-failure
     volumes:
       - ~/.vsdbg:/remote_debugger:rw
 
