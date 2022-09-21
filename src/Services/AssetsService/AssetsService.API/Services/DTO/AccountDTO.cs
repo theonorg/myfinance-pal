@@ -18,6 +18,7 @@ public class AccountDTO
         this.IsActive = acc.IsActive;
         this.Description = acc.Description;
         this.InitialBalance = acc.InitialBalance;
+        this.ActualBalance = acc.ActualBalance;
         this.InitialBalanceDate = acc.InitialBalanceDate;
     }
 
@@ -30,6 +31,7 @@ public class AccountDTO
             Description = this.Description,
             InitialBalance = this.InitialBalance,
             InitialBalanceDate = this.InitialBalanceDate,
+            ActualBalance = this.ActualBalance
         };
     }
 
@@ -40,6 +42,7 @@ public class AccountDTO
         account.Description = this.Description;
         account.InitialBalance = this.InitialBalance;
         account.InitialBalanceDate = this.InitialBalanceDate;
+        account.ActualBalance = this.ActualBalance;
     }
 
     public int Id { get; set; }
@@ -49,5 +52,6 @@ public class AccountDTO
     public string? Description { get; set; }
     public DateTime InitialBalanceDate { get; set; }
     public decimal InitialBalance { get; set; }
+    public decimal ActualBalance { get; set; }
 }
 

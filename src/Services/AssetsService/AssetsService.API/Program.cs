@@ -23,9 +23,13 @@ builder.Services
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IInvestmentAccountService, InvestmentAccountService>();
+builder.Services.AddScoped<IInvestmentTransactionService, InvestmentTransactionService>();
 
 builder.Services.AddScoped<IValidator<AccountDTO>, AccountValidator>();
 builder.Services.AddScoped<IValidator<TransactionDTO>, TransactionValidator>();
+builder.Services.AddScoped<IValidator<InvestmentAccountDTO>, InvestmentAccountValidator>();
+builder.Services.AddScoped<IValidator<InvestmentTransactionDTO>, InvestmentTransactionValidator>();
 
 var app = builder.Build();
 
@@ -505,6 +509,352 @@ app.MapDelete("/transaction/{id}", async ([FromRoute] int id, ITransactionServic
 .ProducesProblem(StatusCodes.Status404NotFound)
 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
+#endregion
+
+#region InvestmentAccount
+
+app.MapGet("/investment/account", async (IInvestmentAccountService service) =>
+{
+    try
+    {
+        app.Logger.LogDebug("Requesting all investment accounts.");
+
+        List<InvestmentAccountDTO> allAccounts = (await service.GetAllAsync()).ToList();
+
+        app.Logger.LogDebug($"Returning {allAccounts.Count} investment accounts");
+
+        return Results.Ok(allAccounts);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, "Problem retrieving all investment accounts");
+        throw;
+    }
+
+})
+.WithName("GetAllInvestmentAccounts")
+.WithTags(new[] { "InvestmentAccount" })
+.Produces<InvestmentAccountDTO[]>(StatusCodes.Status200OK)
+.ProducesProblem(StatusCodes.Status500InternalServerError);
+
+app.MapGet("/investment/account/{id}", async ([FromRoute] int id, IInvestmentAccountService service) =>
+{
+    app.Logger.LogDebug($"Requested investment account with ID {id}");
+    try
+    {
+        InvestmentAccountDTO account = await service.GetAsync(id);
+        app.Logger.LogDebug($"Found {account.Name} with ID {id}");
+
+        return Results.Ok(account);
+    }
+    catch (ItemNotFoundException)
+    {
+        app.Logger.LogInformation($"Was not able to find investment account with ID {id}");
+        return Results.NotFound();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, $"Problem retrieving investment account with ID {id}");
+        throw;
+    }
+})
+.WithName("GetInvestmentAccountById")
+.WithTags(new[] { "InvestmentAccount" })
+.Produces<InvestmentAccountDTO>(StatusCodes.Status200OK)
+.ProducesProblem(StatusCodes.Status404NotFound)
+.ProducesProblem(StatusCodes.Status500InternalServerError);
+
+app.MapPost("/investment/account", async ([FromBody] InvestmentAccountDTO newAccount, IInvestmentAccountService service, IValidator<InvestmentAccountDTO> validator) =>
+{
+    var validationResult = await validator.ValidateAsync(newAccount);
+
+    if (!validationResult.IsValid)
+    {
+        app.Logger.LogWarning($"Investment Account {newAccount} is not valid");
+        return Results.ValidationProblem(validationResult.ToDictionary());
+    }
+
+    try
+    {
+        app.Logger.LogInformation($"Creating a new Investment Account: {newAccount.Name}");
+        InvestmentAccountDTO account = await service.CreateAsync(newAccount);
+
+        app.Logger.LogInformation($"Creating a new Investment Account: {account.Name} with ID {account.Id}");
+        return Results.Created($"/investment/account/{account.Id}", account);
+    }
+    catch (DbUpdateException ex)
+    {
+        app.Logger.LogWarning(ex, $"Problem creating Investment Account {newAccount.Name}");
+        return Results.BadRequest((ex.InnerException ?? ex).Message);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, $"Problem creating Investment Account {newAccount.Name}");
+        throw;
+    }
+})
+.WithName("CreateInvestmentAccount")
+.WithTags(new[] { "InvestmentAccount" })
+.Produces<InvestmentAccountDTO>(StatusCodes.Status201Created)
+.ProducesProblem(StatusCodes.Status400BadRequest)
+.ProducesProblem(StatusCodes.Status500InternalServerError);
+
+app.MapGet("/investment/account/{accountId:int}/transaction", async (int accountId, IInvestmentTransactionService service) =>
+{
+    app.Logger.LogDebug($"Requested transactions from investment account with ID {accountId}");
+    try
+    {
+        List<InvestmentTransactionDTO> transactions = (await service.GetByAccountIdAsync(accountId)).ToList();
+        app.Logger.LogDebug($"Returning {transactions.Count} transactions");
+
+        return Results.Ok(transactions);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, $"Problem retrieving transactions from investment account with ID {accountId}");
+        throw;
+    }
+})
+.WithName("GetTransactionsByInvestmentAccountId")
+.WithTags(new[] { "InvestmentAccount" })
+.Produces<InvestmentTransactionDTO[]>(StatusCodes.Status200OK)
+.ProducesProblem(StatusCodes.Status500InternalServerError);
+
+app.MapPut("/investment/account/{id:int}", async ([FromRoute] int id, [FromBody] InvestmentAccountDTO account, IInvestmentAccountService service, IValidator<InvestmentAccountDTO> validator) =>
+{
+    var validationResult = await validator.ValidateAsync(account);
+
+    if (!validationResult.IsValid)
+    {
+        app.Logger.LogWarning($"Investment Account {account} is not valid");
+        return Results.ValidationProblem(validationResult.ToDictionary());
+    } 
+
+    app.Logger.LogDebug($"Updating investment account {account.Name} with id {id}");
+    if (id != account.Id)
+    {
+        app.Logger.LogInformation($"Requested Id {id} did not match request data {account.Id}");
+        return Results.BadRequest($"Requested Id {id} did not match request data {account.Id}");
+    }
+
+    try
+    {
+        var updatedAccount = await service.UpdateAsync(account);
+        app.Logger.LogInformation($"Updated investment account {account.Name} with id {id}");
+        return Results.Ok(updatedAccount);
+    }
+    catch (ItemNotFoundException ex)
+    {
+        app.Logger.LogWarning(ex, $"Unable to find investment account with id {id}");
+        return Results.NotFound();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, $"Problem updating investment account with id {id}");
+        throw;
+    }
+})
+.WithName("UpdateInvestmentAccount")
+.WithTags(new[] { "InvestmentAccount" })
+.Produces<InvestmentAccountDTO>(StatusCodes.Status200OK)
+.ProducesProblem(StatusCodes.Status404NotFound)
+.ProducesProblem(StatusCodes.Status400BadRequest)
+.ProducesProblem(StatusCodes.Status500InternalServerError);
+
+app.MapDelete("/investment/account/{id:int}", async ([FromRoute] int id, IInvestmentAccountService service) =>
+{
+    app.Logger.LogDebug($"Deleting investment account with id {id}");
+
+    try
+    {
+        var deletedAccount = await service.DeleteAsync(id);
+        app.Logger.LogInformation($"Deleted investment account {deletedAccount.Name} with id {id}");
+        return Results.Ok(deletedAccount);
+    }
+    catch (ItemNotFoundException ex)
+    {
+        app.Logger.LogWarning(ex, $"Unable to find investment account with id {id}");
+        return Results.NotFound();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, $"Problem updating investment account with id {id}");
+        throw;
+    }
+})
+.WithName("DeleteInvestmentAccount")
+.WithTags(new[] { "InvestmentAccount" })
+.Produces<InvestmentAccountDTO>(StatusCodes.Status200OK)
+.ProducesProblem(StatusCodes.Status404NotFound)
+.ProducesProblem(StatusCodes.Status500InternalServerError);
+
+#endregion
+
+#region InvestmentTransaction
+
+app.MapGet("/investment/transaction", async (IInvestmentTransactionService service) =>
+{
+    try
+    {
+        app.Logger.LogDebug("Requesting all investment transactions.");
+
+        List<InvestmentTransactionDTO> allTransactions = (await service.GetAllAsync()).ToList();
+
+        app.Logger.LogDebug($"Returning {allTransactions.Count} transactions");
+
+        return Results.Ok(allTransactions);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, "Problem retrieving all transactions");
+        throw;
+    }
+
+})
+.WithName("GetAllInvestmentTransaction")
+.WithTags(new[] { "InvestmentTransaction" })
+.Produces<InvestmentTransactionDTO[]>(StatusCodes.Status200OK)
+.ProducesProblem(StatusCodes.Status500InternalServerError);
+
+app.MapGet("/investment/transaction/{id}", async ([FromRoute] int id, IInvestmentTransactionService service) =>
+{
+    app.Logger.LogDebug($"Requested investment transaction with ID {id}");
+    try
+    {
+        InvestmentTransactionDTO transaction = await service.GetByIdAsync(id);
+        app.Logger.LogDebug($"Found investment transaction with ID {id}");
+
+        return Results.Ok(transaction);
+    }
+    catch (ItemNotFoundException)
+    {
+        app.Logger.LogInformation($"Was not able to find investment transaction with ID {id}");
+        return Results.NotFound();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, $"Problem retrieving investment transaction with ID {id}");
+        throw;
+    }
+})
+.WithName("GetInvestmentTransactionById")
+.WithTags(new[] { "InvestmentTransaction" })
+.Produces<InvestmentTransactionDTO>(StatusCodes.Status200OK)
+.ProducesProblem(StatusCodes.Status404NotFound)
+.ProducesProblem(StatusCodes.Status500InternalServerError);
+
+app.MapPost("/investment/transaction", async ([FromBody] InvestmentTransactionDTO newTransaction, IInvestmentTransactionService service, IValidator<InvestmentTransactionDTO> validator) =>
+{
+    var validationResult = await validator.ValidateAsync(newTransaction);
+
+    if (!validationResult.IsValid)
+    {
+        app.Logger.LogWarning($"Transaction {newTransaction} is not valid");
+        return Results.ValidationProblem(validationResult.ToDictionary());
+    }
+
+    try
+    {
+        app.Logger.LogInformation($"Creating a new transaction: {newTransaction.Description}, {newTransaction.Date} on account {newTransaction.InvestmentAccountId}");
+        InvestmentTransactionDTO transaction = await service.CreateAsync(newTransaction);
+
+        app.Logger.LogInformation($"Created a new transaction: {newTransaction.Description}, {newTransaction.Date} on account {newTransaction.InvestmentAccountId}");
+        return Results.Created($"/transaction/{transaction.Id}", transaction);
+    }
+    catch (DbUpdateException ex)
+    {
+        app.Logger.LogWarning(ex, $"Problem creating transaction {newTransaction.Description}");
+        return Results.BadRequest((ex.InnerException ?? ex).Message);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, $"Problem creating transaction {newTransaction.Description}");
+        throw;
+    }
+})
+.WithName("CreateInvestmentTransaction")
+.WithTags(new[] { "InvestmentTransaction" })
+.Produces<InvestmentTransactionDTO>(StatusCodes.Status201Created)
+.ProducesProblem(StatusCodes.Status400BadRequest)
+.ProducesProblem(StatusCodes.Status500InternalServerError);
+
+app.MapPut("/investment/transaction/{id}", async ([FromRoute] int id, [FromBody] InvestmentTransactionDTO transaction, IInvestmentTransactionService service, IValidator<InvestmentTransactionDTO> validator) =>
+{
+    var validationResult = await validator.ValidateAsync(transaction);
+
+    if (!validationResult.IsValid)
+    {
+        app.Logger.LogWarning($"Transaction {transaction} is not valid");
+        return Results.ValidationProblem(validationResult.ToDictionary());
+    }
+
+    app.Logger.LogDebug($"Updating transaction with id {id}");
+    if (id != transaction.Id)
+    {
+        app.Logger.LogInformation($"Requested Id {id} did not match request data {transaction.Id}");
+        return Results.BadRequest($"Requested Id {id} did not match request data {transaction.Id}");
+    }
+
+    try
+    {
+        var updatedTransaction = await service.UpdateAsync(transaction);
+        app.Logger.LogInformation($"Updated transaction with id {id}");
+        return Results.Ok(updatedTransaction);
+    }
+    catch (OperationNotAllowedException ex)
+    {
+        app.Logger.LogWarning(ex, $"Transaction with Id {id} cannot be updated since is a synced transaction");
+        return Results.BadRequest($"Transaction with Id {id} cannot be updated since is a synced transaction");
+    }
+    catch (ItemNotFoundException ex)
+    {
+        app.Logger.LogWarning(ex, $"Unable to find transaction with id {id}");
+        return Results.NotFound();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, $"Problem updating transaction with id {id}");
+        throw;
+    }
+})
+.WithName("UpdateInvestmentTransaction")
+.WithTags(new[] { "InvestmentTransaction" })
+.Produces<InvestmentTransactionDTO>(StatusCodes.Status200OK)
+.ProducesProblem(StatusCodes.Status404NotFound)
+.ProducesProblem(StatusCodes.Status400BadRequest)
+.ProducesProblem(StatusCodes.Status500InternalServerError);
+
+app.MapDelete("/investment/transaction/{id}", async ([FromRoute] int id, IInvestmentTransactionService transactionService) =>
+{
+    app.Logger.LogDebug($"Deleting transaction with id {id}");
+
+    try
+    {
+        var deletedTransaction = await transactionService.DeleteAsync(id);
+        app.Logger.LogInformation($"Deleted transaction with id {id}");
+        return Results.Ok(deletedTransaction);
+    }
+    catch (OperationNotAllowedException ex)
+    {
+        app.Logger.LogWarning(ex, $"Transaction with Id {id} cannot be deleted since is a synced transaction");
+        return Results.BadRequest($"Transaction with Id {id} cannot be deleted since is a synced transaction");
+    }
+    catch (ItemNotFoundException ex)
+    {
+        app.Logger.LogWarning(ex, $"Unable to find account with id {id}");
+        return Results.NotFound();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, $"Problem updating account with id {id}");
+        throw;
+    }
+})
+.WithName("DeleteInvestmentTransaction")
+.WithTags(new[] { "InvestmentTransaction" })
+.Produces<InvestmentTransactionDTO>(StatusCodes.Status200OK)
+.ProducesProblem(StatusCodes.Status404NotFound)
+.ProducesProblem(StatusCodes.Status500InternalServerError);
 
 #endregion
 

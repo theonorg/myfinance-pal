@@ -2,6 +2,14 @@ version: '3.4'
 
 services:
 
+  my-finance-pal-web:
+    image: my-finance-pal/mfp-webapp
+    build:
+      context: src/Web/MyFinancePal
+      dockerfile: ./Dockerfile
+    depends_on:
+      - assets-service-api
+
   bank-integration-api:
     image: my-finance-pal/bank-integration-api
     build:

@@ -2,6 +2,10 @@ version: '3.4'
 
 services:
 
+  my-finance-pal-web:
+    ports:
+      - 9000:80
+
   bank-integration-api:
     ports:
       - 8000:80

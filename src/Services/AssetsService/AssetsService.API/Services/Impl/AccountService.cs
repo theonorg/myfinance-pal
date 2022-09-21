@@ -1,4 +1,4 @@
-namespace Tiberna.MyFinancePal.AssetsService.API.Services;
+namespace Tiberna.MyFinancePal.AssetsService.API.Services.Impl;
 
 public class AccountService : IAccountService
 {

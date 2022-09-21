@@ -2,15 +2,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Tiberna.MyFinancePal.AssetsService.API.Models.Configuration;
 
-public class TransactionEntityTypeConfiguration : IEntityTypeConfiguration<Transaction>
+public class InvestmentTransactionEntityTypeConfiguration : IEntityTypeConfiguration<InvestmentTransaction>
 {
-    public void Configure(EntityTypeBuilder<Transaction> builder)
+    public void Configure(EntityTypeBuilder<InvestmentTransaction> builder)
     {
         builder.HasKey(acc => acc.Id);
-
-        builder.HasIndex(acc => acc.BankTransactionId)
-            .IsUnique(true)
-            .HasFilter("bank_transaction_id IS NOT NULL");
 
         builder.Property(acc => acc.Date)
             .IsRequired();
@@ -18,7 +14,7 @@ public class TransactionEntityTypeConfiguration : IEntityTypeConfiguration<Trans
         builder.Property(acc => acc.CurrencyId)
             .IsRequired();
 
-        builder.Property(acc => acc.AccountId)
+        builder.Property(acc => acc.InvestmentAccountId)
             .IsRequired();
 
         builder.Property(acc => acc.Description)
@@ -28,10 +24,5 @@ public class TransactionEntityTypeConfiguration : IEntityTypeConfiguration<Trans
             .IsRequired()
             .HasPrecision(10, 2);
 
-        builder.Property(acc => acc.BankTransactionId)
-            .HasColumnName("bank_transaction_id");
-
-        builder.Property(acc => acc.IsIncome)
-            .HasDefaultValue(false);
     }
 }

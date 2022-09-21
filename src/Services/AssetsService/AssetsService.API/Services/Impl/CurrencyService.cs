@@ -1,12 +1,11 @@
-
-namespace Tiberna.MyFinancePal.AssetsService.API.Services;
+namespace Tiberna.MyFinancePal.AssetsService.API.Services.Impl;
 
 public class CurrencyService : ICurrencyService
 {
     private readonly AssetsDbContext _context;
     private readonly ILogger _logger;
 
-    public CurrencyService(AssetsDbContext context, ILogger<AccountService> logger)
+    public CurrencyService(AssetsDbContext context, ILogger<CurrencyService> logger)
     {
         _context = context;
         _logger = logger;

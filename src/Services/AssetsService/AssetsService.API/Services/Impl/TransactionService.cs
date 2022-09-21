@@ -1,11 +1,11 @@
-namespace Tiberna.MyFinancePal.AssetsService.API.Services;
+namespace Tiberna.MyFinancePal.AssetsService.API.Services.Impl;
 
 public class TransactionService : ITransactionService
 {
     private readonly AssetsDbContext _context;
     private readonly ILogger _logger;
 
-    public TransactionService(AssetsDbContext context, ILogger<AccountService> logger)
+    public TransactionService(AssetsDbContext context, ILogger<TransactionService> logger)
     {
         _context = context;
         _logger = logger;

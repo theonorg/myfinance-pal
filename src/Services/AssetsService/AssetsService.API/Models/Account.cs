@@ -6,11 +6,12 @@ public class Account
     public string? Name { get; set; }
     public string? BankAccountId { get; set; }
     public bool IsActive { get; set; } = true;
-    public int AccountCurrencyCurrencyId { get; set; }
+    public int AccountCurrencyId { get; set; }
     public Currency? AccountCurrency { get; set; }
     public string? Description { get; set; }
     public DateTime InitialBalanceDate { get; set; }
     public decimal InitialBalance { get; set; }
+    public decimal ActualBalance { get; set; }
     public List<Transaction>? Transactions { get; set; }
 }
 
