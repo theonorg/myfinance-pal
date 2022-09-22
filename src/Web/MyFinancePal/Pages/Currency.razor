@@ -1,0 +1,43 @@
+﻿@page "/currency"
+@inject HttpClient Http
+@inject Tiberna.MyFinancePal.Web.Services.ICurrencyService currencyService;
+
+<PageTitle>Currencies</PageTitle>
+
+<h1>Currencies</h1>
+
+@if (currencies == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Code</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var currency in currencies)
+            {
+                <tr>
+                    <td>@currency.Id</td>
+                    <td>@currency.Name</td>
+                    <td>@currency.Code</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<CurrencyDTO>? currencies;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currencies = await currencyService.GetAllCurrenciesAsync();
+    }
+}
