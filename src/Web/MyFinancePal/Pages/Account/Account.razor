@@ -1,0 +1,104 @@
+﻿@page "/account"
+
+@inject Tiberna.MyFinancePal.Web.Services.IAccountService assetsService;
+
+<PageTitle>Accounts</PageTitle>
+
+<h1>Accounts</h1>
+<div class="row">
+    <div class="col-md-6">
+        <a href='/account/add' class="btn btn-primary" role="button">
+            <i class="fas fa-user-plus"></i>
+            Add Account
+        </a>
+    </div>
+    <div class="input-group col">
+        <input type="text" class="form-control" placeholder="Search user by name"
+               @bind="SearchString" @bind:event="oninput" @onkeyup="FilterAccount" />
+        @if (SearchString.Length > 0)
+        {
+            <div class="input-group-append">
+                <button class="btn btn-danger" @onclick="ResetSearch">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        }
+    </div>
+</div>
+<br />
+@if (accounts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actual Balance</th>
+                <th>BankAccountId</th>
+                <th>Is Active?</th>
+                <th>Initial Balance</th>
+                <th>Initial Balance Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var account in accounts)
+            {
+                <tr>
+                    <td>@account.Id</td>
+                    <td>@account.Name</td>
+                    <td>@account.Description</td>
+                    <td>@account.ActualBalance</td>
+                    <td>@account.BankAccountId</td>
+                    <td>@account.IsActive</td>
+                    <td>@account.InitialBalance</td>
+                    <td>@account.InitialBalanceDate.ToShortDateString()</td>
+                    <td>
+                        <a href='/account/edit/@account.Id' class="btn btn-outline-dark" role="button">
+                            Edit
+                        </a>
+                        <a href='/account/delete/@account.Id' class="btn btn-outline-danger" role="button">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<AccountDTO>? accounts;
+        private IEnumerable<AccountDTO>? searchAccountData;
+    protected string SearchString { get; set; } = string.Empty;
+
+    public void ResetSearch()
+    {
+        SearchString = string.Empty;
+        accounts = searchAccountData;
+    }
+
+    protected void FilterAccount()
+    {
+        if (!string.IsNullOrEmpty(SearchString))
+        {
+            accounts = searchAccountData!
+                .Where(x => x.Name!.IndexOf(SearchString, StringComparison.OrdinalIgnoreCase) != -1)
+                .ToList();
+        }
+        else
+        {
+            accounts = searchAccountData;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        accounts = await assetsService.GetAllAccountsAsync();
+        searchAccountData = accounts;
+    }
+}

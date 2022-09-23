@@ -30,7 +30,7 @@ public class AccountDTO
             IsActive = this.IsActive,
             Description = this.Description,
             InitialBalance = this.InitialBalance,
-            InitialBalanceDate = this.InitialBalanceDate,
+            InitialBalanceDate = DateTime.SpecifyKind(this.InitialBalanceDate, DateTimeKind.Utc),
             ActualBalance = this.ActualBalance
         };
     }

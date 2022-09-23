@@ -8,7 +8,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 
 var servicesConfig = builder.Configuration.GetSection(ServicesConfiguration.SectionName).Get<ServicesConfiguration>();
 
-builder.Services.AddScoped<IAssetsService, AssetsService>(sp => new AssetsService(new HttpClient() {
+builder.Services.AddScoped<IAccountService, AccountService>(sp => new AccountService(new HttpClient() {
     BaseAddress = new Uri(servicesConfig.AssetsService!.URI!)
 }));
 

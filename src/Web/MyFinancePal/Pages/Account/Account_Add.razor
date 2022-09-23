@@ -1,0 +1,82 @@
+@page "/account/add"
+@page "/account/edit/{accountId:int}"
+
+@inject Tiberna.MyFinancePal.Web.Services.IAccountService accountService;
+@inject NavigationManager NavigationManager
+
+<h1>@Title Account</h1>
+<hr />
+<EditForm Model="@account" OnValidSubmit="SaveAccount">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="Name" class="form-label">Name</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="account.Name" />
+        </div>
+        <ValidationMessage For="@(() => account.Name)" />
+    </div>
+    <div class="mb-3">
+        <label for="Description" class="form-label">Description</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="account.Description" />
+        </div>
+        <ValidationMessage For="@(() => account.Description)" />
+    </div>
+    <div class="mb-3">
+        <label for="BankAccountId" class="form-label">Bank Account Id</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="account.BankAccountId" />
+        </div>
+        <ValidationMessage For="@(() => account.BankAccountId)" />
+    </div>
+    @* <div class="mb-3">
+        <label for="IsActive" class="form-label">IsActive</label>
+        <div class="col-md-4">
+            <InputCheckbox class="form-control" @bind-Value="account.IsActive" />
+        </div>
+        <ValidationMessage For="@(() => account.IsActive)" />
+    </div> *@
+    <div class="mb-3">
+        <label for="InitialBalance" class="form-label">InitialBalance</label>
+        <div class="col-md-4">
+            <InputNumber class="form-control" @bind-Value="account.InitialBalance" />
+        </div>
+        <ValidationMessage For="@(() => account.InitialBalance)" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button class="btn btn-light" @onclick="Cancel">Cancel</button>
+    </div>
+</EditForm>
+@code {
+    [Parameter]
+    public int accountId { get; set; }
+    protected string Title = "Add";
+    protected AccountDTO account = new();
+    protected override async Task OnParametersSetAsync()
+    {
+        if (accountId != 0)
+        {
+            Title = "Edit";
+            account = await accountService.GetAccountAsync(accountId);
+        }
+    }
+    protected async Task SaveAccount()
+    {
+        if (account.Id == 0)
+        {
+            account.InitialBalanceDate = DateTime.Now;
+            account.IsActive = true;
+            await accountService.CreateAccountAsync(account);
+        }
+        else
+        {
+            await accountService.UpdateAccountAsync(accountId, account);
+        }
+        Cancel();
+    }
+    public void Cancel()
+    {
+        NavigationManager.NavigateTo("/account");
+    }
+}
