@@ -20,6 +20,7 @@ public class AccountDTO
         this.InitialBalance = acc.InitialBalance;
         this.ActualBalance = acc.ActualBalance;
         this.InitialBalanceDate = acc.InitialBalanceDate;
+        this.CurrencyId = acc.AccountCurrencyId;
     }
 
     public Account ToAccount() {
@@ -31,7 +32,8 @@ public class AccountDTO
             Description = this.Description,
             InitialBalance = this.InitialBalance,
             InitialBalanceDate = DateTime.SpecifyKind(this.InitialBalanceDate, DateTimeKind.Utc),
-            ActualBalance = this.ActualBalance
+            ActualBalance = this.ActualBalance,
+            AccountCurrencyId = this.CurrencyId
         };
     }
 
@@ -43,6 +45,7 @@ public class AccountDTO
         account.InitialBalance = this.InitialBalance;
         account.InitialBalanceDate = this.InitialBalanceDate;
         account.ActualBalance = this.ActualBalance;
+        account.AccountCurrencyId = this.CurrencyId;
     }
 
     public int Id { get; set; }
@@ -53,5 +56,6 @@ public class AccountDTO
     public DateTime InitialBalanceDate { get; set; }
     public decimal InitialBalance { get; set; }
     public decimal ActualBalance { get; set; }
+    public int CurrencyId { get; set; }
 }
 

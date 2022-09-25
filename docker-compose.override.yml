@@ -5,6 +5,11 @@ services:
   my-finance-pal-web:
     ports:
       - 9000:80
+    build:
+      args:
+        - Configuration=Debug
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
 
   bank-integration-api:
     ports:
@@ -37,4 +42,9 @@ services:
     environment:
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=P@ssw0rd
+    volumes:
+      - assets-db-data:/var/lib/postgresql/data
+
+volumes:
+  assets-db-data: {}
     

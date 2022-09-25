@@ -2,6 +2,7 @@
 @page "/account/edit/{accountId:int}"
 
 @inject Tiberna.MyFinancePal.Web.Services.IAccountService accountService;
+@inject Tiberna.MyFinancePal.Web.Services.ICurrencyService currencyService;
 @inject NavigationManager NavigationManager
 
 <h1>@Title Account</h1>
@@ -36,12 +37,26 @@
         </div>
         <ValidationMessage For="@(() => account.IsActive)" />
     </div> *@
+    <div class="col-md-3 mb-3">
+            <div class="form-check">
+                <InputCheckbox class="form-check-input" @bind-Value="account.IsActive" /> IsActive<br />
+            </div>
+    </div>
     <div class="mb-3">
         <label for="InitialBalance" class="form-label">InitialBalance</label>
         <div class="col-md-4">
             <InputNumber class="form-control" @bind-Value="account.InitialBalance" />
         </div>
         <ValidationMessage For="@(() => account.InitialBalance)" />
+    </div>
+    <div>
+        <label>Currency</label><br />
+        <InputSelect @bind-Value="account.CurrencyId" class="form-select">
+            @foreach (var curr in currencies!)
+            {
+                <option value="@curr.Id">@curr.ToString()</option>
+            }
+        </InputSelect>
     </div>
     <div class="form-group">
         <button type="submit" class="btn btn-primary">Save</button>
@@ -53,6 +68,13 @@
     public int accountId { get; set; }
     protected string Title = "Add";
     protected AccountDTO account = new();
+    private IEnumerable<CurrencyDTO>? currencies = new List<CurrencyDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        currencies = await currencyService.GetAllCurrenciesAsync();
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         if (accountId != 0)
@@ -61,12 +83,14 @@
             account = await accountService.GetAccountAsync(accountId);
         }
     }
+
     protected async Task SaveAccount()
     {
         if (account.Id == 0)
         {
             account.InitialBalanceDate = DateTime.Now;
             account.IsActive = true;
+            account.ActualBalance = account.InitialBalance;
             await accountService.CreateAccountAsync(account);
         }
         else

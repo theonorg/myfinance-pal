@@ -1,6 +1,8 @@
 ﻿@page "/account"
 
-@inject Tiberna.MyFinancePal.Web.Services.IAccountService assetsService;
+@inject Tiberna.MyFinancePal.Web.Services.IAccountService accountService;
+@inject Tiberna.MyFinancePal.Web.Services.ICurrencyService currencyService;
+@inject IJSRuntime JsRuntime
 
 <PageTitle>Accounts</PageTitle>
 
@@ -39,10 +41,7 @@ else
                 <th>Name</th>
                 <th>Description</th>
                 <th>Actual Balance</th>
-                <th>BankAccountId</th>
                 <th>Is Active?</th>
-                <th>Initial Balance</th>
-                <th>Initial Balance Date</th>
             </tr>
         </thead>
         <tbody>
@@ -52,18 +51,13 @@ else
                     <td>@account.Id</td>
                     <td>@account.Name</td>
                     <td>@account.Description</td>
-                    <td>@account.ActualBalance</td>
-                    <td>@account.BankAccountId</td>
+                    <td>@FormatCurrency(account.ActualBalance, account.CurrencyId)</td>
                     <td>@account.IsActive</td>
-                    <td>@account.InitialBalance</td>
-                    <td>@account.InitialBalanceDate.ToShortDateString()</td>
                     <td>
                         <a href='/account/edit/@account.Id' class="btn btn-outline-dark" role="button">
                             Edit
                         </a>
-                        <a href='/account/delete/@account.Id' class="btn btn-outline-danger" role="button">
-                            Delete
-                        </a>
+                        <button type="button" class="btn btn-danger" @onclick="@(e => DeleteAccount(account.Id))">Delete</button>
                     </td>
                 </tr>
             }
@@ -73,8 +67,10 @@ else
 
 @code {
     private IEnumerable<AccountDTO>? accounts;
-        private IEnumerable<AccountDTO>? searchAccountData;
+    private IEnumerable<AccountDTO>? searchAccountData;
     protected string SearchString { get; set; } = string.Empty;
+
+    private IEnumerable<CurrencyDTO>? currencies = new List<CurrencyDTO>();
 
     public void ResetSearch()
     {
@@ -98,7 +94,30 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        accounts = await assetsService.GetAllAccountsAsync();
+        currencies = await currencyService.GetAllCurrenciesAsync();
+        await FetchData();
+    }
+
+    private async Task FetchData()
+    {
+        accounts = await accountService.GetAllAccountsAsync();
         searchAccountData = accounts;
+        StateHasChanged();
+    }
+
+    private string FormatCurrency(decimal value, int currencyId)
+    {
+        var symbol = currencies!.FirstOrDefault(x => x.Id == currencyId)?.Symbol ?? string.Empty;
+        return $"{symbol} {string.Format("{0:f2}", value)}";
+    }
+
+    protected async Task DeleteAccount(int accountId)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+        if (confirmed)
+        {
+            await accountService.DeleteAccountAsync(accountId);
+            await FetchData();
+        }
     }
 }

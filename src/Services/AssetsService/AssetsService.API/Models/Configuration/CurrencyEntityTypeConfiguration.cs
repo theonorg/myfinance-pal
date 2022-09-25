@@ -18,10 +18,10 @@ public class CurrencyEntityTypeConfiguration : IEntityTypeConfiguration<Currency
             .HasMaxLength(3);
 
         builder.HasData(
-            new { Id = 1, Name = "Euro", Code = "EUR" },
-            new { Id = 2, Name = "Dollar", Code = "USD" },
-            new { Id = 3, Name = "British Pound", Code = "GBP" },
-            new { Id = 4, Name = "Brazilian Real", Code = "BRL" }
+            new { Id = 1, Name = "Euro", Code = "EUR", Symbol = "€" },
+            new { Id = 2, Name = "Dollar", Code = "USD", Symbol = "$" },
+            new { Id = 3, Name = "British Pound", Code = "GBP", Symbol = "£" },
+            new { Id = 4, Name = "Brazilian Real", Code = "BRL", Symbol = "R$" }
         );
     }
 }

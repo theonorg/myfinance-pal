@@ -26,9 +26,15 @@ public class AccountService : IAccountService
         return newAccount ?? new AccountDTO();
     }
 
-    public Task<AccountDTO> DeleteAccountAsync(int id)
+    public async Task<AccountDTO> DeleteAccountAsync(int id)
     {
-        throw new NotImplementedException();
+        var account = new AccountDTO();
+        var response = await httpClient.DeleteAsync($"{AccountEndpoint}/{id}");
+        if (response.IsSuccessStatusCode)
+        {
+            account = await response.Content.ReadFromJsonAsync<AccountDTO>();
+        }
+        return account ?? new AccountDTO();
     }
 
     public async Task<AccountDTO> GetAccountAsync(int id)
